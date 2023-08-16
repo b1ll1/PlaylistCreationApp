@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/spomodoro/static/css/main.8755caa2.css",
-    "main.js": "/spomodoro/static/js/main.6ec088db.js",
+    "main.js": "/spomodoro/static/js/main.0a61a665.js",
     "static/js/787.eef5a256.chunk.js": "/spomodoro/static/js/787.eef5a256.chunk.js",
     "index.html": "/spomodoro/index.html",
     "main.8755caa2.css.map": "/spomodoro/static/css/main.8755caa2.css.map",
-    "main.6ec088db.js.map": "/spomodoro/static/js/main.6ec088db.js.map",
+    "main.0a61a665.js.map": "/spomodoro/static/js/main.0a61a665.js.map",
     "787.eef5a256.chunk.js.map": "/spomodoro/static/js/787.eef5a256.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8755caa2.css",
-    "static/js/main.6ec088db.js"
+    "static/js/main.0a61a665.js"
   ]
 }
