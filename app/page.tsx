@@ -125,7 +125,7 @@ export default function HomePage() {
       <Navbar />
       {showBox && (
         <motion.div
-          className="transition-box bg-neutral-800 text-white rounded-b-lg p-5 shadow-lg mx-10 xl:mx-80 lg:mx-20"
+          className="transition-box bg-neutral-800 text-white rounded-b-lg p-5 shadow-lg mx-5 xl:mx-80 lg:mx-20 sm:mx-10"
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
@@ -172,8 +172,8 @@ export default function HomePage() {
           </div>
         </motion.div>
       )}
-      <div className="px-10 pt-10 overflow-y-auto mx-10 xl:mx-80 lg:mx-20">
-        <div className="max-w-md text-slate-50 px-10">
+      <div className="px-10 pt-10 overflow-y-auto xl:mx-80 lg:mx-20 sm:mx-10">
+        <div className="max-w-md text-slate-50 sm:px-10">
           <p className="p-3">
             Start chatting about your favourite artists, tracks and genres...
           </p>
@@ -183,7 +183,7 @@ export default function HomePage() {
             key={index}
             className={`flex ${
               entry.role === "user" ? "justify-end" : "justify-start"
-            } px-10`}
+            } sm:px-10`}
           >
             <div
               className={`max-w-md p-3 rounded-lg ${
