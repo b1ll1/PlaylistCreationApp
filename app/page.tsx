@@ -3,18 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Navbar from "./_components/Navbar";
 import { motion } from "framer-motion";
+import Modal from "./_components/Modal";
 
 // Define the type for a conversation entry
 type ConversationEntry = {
   role: "user" | "assistant";
   content: string;
 };
-
-interface SpotifyUser {
-  display_name: string;
-  email: string;
-  country: string;
-}
 
 export default function HomePage() {
   const [prompt, setPrompt] = useState("");
@@ -26,9 +21,12 @@ export default function HomePage() {
     duration: 60,
     prompt: "",
   });
-  const [loading, setLoading] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const [loadingPlaylist, setLoadingPlaylist] = useState(false);
+  const [playlistLink, setPlaylistLink] = useState('');
   const [conversation, setConversation] = useState<ConversationEntry[]>([]);
   const [showBox, setShowBox] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -58,7 +56,7 @@ export default function HomePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingChat(true);
     setResponse({
       artists: [],
       songs: [],
@@ -95,11 +93,12 @@ export default function HomePage() {
     } catch (error) {
       console.error("Error fetching response:", error);
     } finally {
-      setLoading(false);
+      setLoadingChat(false);
     }
   };
 
   const createPlaylist = async () => {
+    setLoadingPlaylist(true);
     try {
       const res = await fetch("/api/spotify", {
         method: "POST",
@@ -108,10 +107,16 @@ export default function HomePage() {
         },
         body: JSON.stringify({ playlistData: response }),
       });
+      if(res.ok) {
+        const data = await res.json();
+        console.log(data.playlistLink)
+        setPlaylistLink(data.playlistLink)
+        setShowModal(true)
+      }
     } catch (error) {
       console.error("Error fetching response:", error);
     } finally {
-      // setLoading(false);
+      setLoadingPlaylist(false);
     }
   };
 
@@ -120,7 +125,7 @@ export default function HomePage() {
       <Navbar />
       {showBox && (
         <motion.div
-          className="transition-box bg-neutral-800 text-white mx-80 rounded-b-lg p-5 shadow-lg"
+          className="transition-box bg-neutral-800 text-white rounded-b-lg p-5 shadow-lg mx-10 xl:mx-80 lg:mx-20"
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
@@ -154,19 +159,24 @@ export default function HomePage() {
             </div>
 
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ml-auto"
+              className="bg-blue-500 text-white w-36 py-2 rounded-lg hover:bg-blue-600 ml-auto items-center justify-center flex"
+              disabled={loadingPlaylist}
               onClick={createPlaylist}
             >
-              Create Playlist
+              {loadingPlaylist ? (
+                <div className="w-10 h-10 border-4 border-blue-800 border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                "Create Playlist"
+              )}
             </button>
           </div>
         </motion.div>
       )}
-      <div className="px-80 pt-10 overflow-y-auto">
+      <div className="px-10 pt-10 overflow-y-auto mx-10 xl:mx-80 lg:mx-20">
         <div className="max-w-md text-slate-50 px-10">
           <p className="p-3">
             Start chatting about your favourite artists, tracks and genres...
-            </p>
+          </p>
         </div>
         {conversation.map((entry, index) => (
           <div
@@ -191,7 +201,7 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-      <div className="mt-auto mb-4 mx-80">
+      <div className="mt-auto mb-4 mx-10 xl:mx-80 lg:mx-20">
         <form onSubmit={handleSubmit} className="flex flex-row justify-center">
           <textarea
             ref={textareaRef}
@@ -202,45 +212,18 @@ export default function HomePage() {
           />
           <button
             type="submit"
-            disabled={loading}
+            disabled={loadingChat}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
           >
-            {loading ? "Loading..." : "Send"}
+            {loadingChat ? "Loading..." : "Send"}
           </button>
         </form>
       </div>
-      {/* {showBox && (
-        <div className="transition-box">
-          <h2>Detected Playlist Information</h2>
-          {response.prompt && (
-            <>
-              <p>
-                <strong>Artists:</strong> {response.artists?.join(", ")}
-              </p>
-              <p>
-                <strong>Songs:</strong> {response.songs?.join(", ")}
-              </p>
-              <p>
-                <strong>Genres:</strong> {response.genres?.join(", ")}
-              </p>
-            </>
-          )}
-          <button className="create-playlist-button" onClick={createPlaylist}>
-            Create Playlist
-          </button>
-        </div>
-      )} */}
-      {/* <h1>Spotify Data</h1>
-      {error && <p>Error: {error}</p>}
-      {data ? (
-        <div>
-          <h2>Welcome, {data.display_name}</h2>
-          <p>Email: {data.email}</p>
-          <p>Country: {data.country}</p>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}{" "} */}
+       <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        playlistLink={playlistLink}
+      />
     </div>
   );
 }

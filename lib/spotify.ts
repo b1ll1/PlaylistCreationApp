@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { RecommendationsResponse, CreatePlaylistResponse } from '../types/spotify';
 
 // Function to get a new access token
 async function getNewAccessToken(): Promise<string> {
@@ -70,4 +71,83 @@ async function findTrackId(name: string): Promise<string | null> {
   return null;
 }
 
-export { getNewAccessToken, searchSpotify, findArtistId, findTrackId };
+async function fetchRecommendations(accessToken: string, seedArtists: string, seedTracks: string, seedGenres:string, limit = 50): Promise<RecommendationsResponse> {
+
+  const recommendationsEndpoint = "https://api.spotify.com/v1/recommendations";
+  const queryParams = new URLSearchParams({
+    seed_artists: seedArtists,
+    seed_tracks: seedTracks,
+    seed_genres: seedGenres,
+    limit: limit.toString(), // Convert limit to string
+  });
+
+  const url = `${recommendationsEndpoint}?${queryParams.toString()}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch recommendations from Spotify API.");
+  }
+
+  return await response.json();
+}
+
+async function createPlaylist(
+  accessToken: string,
+  userId: string,
+  playlistName: string,
+  isPublic: boolean = true
+): Promise<CreatePlaylistResponse> {
+  const response = await fetch(
+    `https://api.spotify.com/v1/users/${userId}/playlists`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: playlistName,
+        public: isPublic,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to create a playlist.");
+  }
+
+  return await response.json();
+}
+
+async function addTracksToPlaylist(
+  accessToken: string,
+  playlistId: string,
+  trackUris: string[]
+): Promise<void> {
+  const response = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uris: trackUris,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to add tracks to the playlist.");
+  }
+}
+
+export { getNewAccessToken, searchSpotify, findArtistId, findTrackId, fetchRecommendations, createPlaylist, addTracksToPlaylist };
