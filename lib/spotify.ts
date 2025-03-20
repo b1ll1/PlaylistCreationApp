@@ -100,6 +100,8 @@ async function fetchRecommendations(
 
   const url = `${recommendationsEndpoint}?${queryParams.toString()}`;
 
+  console.log(url)
+
   const response = await fetch(url, {
     method: "GET",
     headers: {
@@ -109,6 +111,10 @@ async function fetchRecommendations(
   });
 
   if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Spotify API Error:", errorData);
+    const responseText = await response.text();
+    console.log("Raw Response:", responseText);
     throw new Error("Failed to fetch recommendations from Spotify API.");
   }
 
@@ -208,5 +214,5 @@ export {
   fetchRecommendations,
   createPlaylist,
   addTracksToPlaylist,
-  totalPlaylists
+  totalPlaylists,
 };

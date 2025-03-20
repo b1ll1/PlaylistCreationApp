@@ -13,7 +13,7 @@ function Navbar() {
           alt="dj drilly icon "
           className="object-contain mx-2"
         />
-        djdrilly
+      aidj
       </Link>
       <Link href="/about" className="px-5">
         about

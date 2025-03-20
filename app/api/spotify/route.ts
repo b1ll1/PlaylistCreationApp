@@ -75,9 +75,13 @@ export const POST = async (req: NextRequest) => {
     // Create a new playlist
     const userId: string = "31w2rrji6cok6swmlym3oddoxp2e"; // Replace with dynamic userId if necessary
 
-    const playlistNumber: number = await totalPlaylists(accessToken, userId)
+    const playlistNumber: number = await totalPlaylists(accessToken, userId);
 
-    const playlist = await createPlaylist(accessToken, userId, `djdrilly#${playlistNumber+1}`);
+    const playlist = await createPlaylist(
+      accessToken,
+      userId,
+      `djai#${playlistNumber + 1}`
+    );
 
     // Add recommended tracks to the playlist
     await addTracksToPlaylist(accessToken, playlist.id, trackUris);
